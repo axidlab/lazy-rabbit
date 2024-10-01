@@ -12,8 +12,11 @@
       :nodes="nodes"
       :edges="edges"
       :layouts="layouts"
-      :configs="configs"
-  />
+      :configs="configs">
+    <template #edge-label="{ edge, ...slotProps }">
+      <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps" />
+    </template>
+  </v-network-graph>
   <div>
     <h3>Source</h3>
     <pre>{{ fileContent }}</pre>
@@ -177,7 +180,7 @@ const createEdges = (data) => {
     let source = binding.source.replace(/\./g, '_');
     let target = "q_" + binding.destination.replace(/\./g, '_');
     const key = source + "_" + target
-    result[key] = { source: source, target: target, color: "grey" }
+    result[key] = { source: source, target: target, color: "grey", label: binding.routing_key }
   })
   return result
 }
