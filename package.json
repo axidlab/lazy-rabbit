@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "dagre": "^0.8.5",
     "nuxt": "^3.13.0",
     "v-network-graph": "^0.9.17",
     "vue": "latest",

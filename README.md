@@ -8,8 +8,5 @@ Lazy Rabbit - Topology Visualizer
 
 ### Plugins
 
-* v-network-graph (yarn add v-network-graph)
-
-### Resources
-
-* https://dash14.github.io/v-network-graph
+* v-network-graph (https://dash14.github.io/v-network-graph)
+* dagre (https://github.com/dagrejs/dagre/wiki)
