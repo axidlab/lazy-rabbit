@@ -2,9 +2,12 @@
   <h1>Lazy Rabbit - Topology Visualizer</h1>
   <div>
     <form @submit.prevent="handleFileUpload">
+      <button type="button" v-on:click="loadSample">Load sample</button>
+      &nbsp;or&nbsp; 
       <input type="file" accept=".json" @change="handleFileChange" />
       <button type="submit">Show topology</button>
     </form>
+    
   </div>
   <v-network-graph
       class="graph"
@@ -36,9 +39,6 @@
 <script setup lang="ts">
 import {reactive, ref} from 'vue'
 import * as vNG from "v-network-graph";
-// dagre: Directed graph layout for JavaScript
-// https://github.com/dagrejs/dagre
-//@ts-ignore
 import dagre from "dagre/dist/dagre.min.js"
 
 const selectedFile = ref(null)
@@ -56,11 +56,13 @@ const nodeSize = 40
 const configs = reactive(
     vNG.defineConfigs<Node, Edge>({
       view: {
-        autoPanAndZoomOnLoad: "fit-content",
+        autoPanAndZoomOnLoad: "center-content",
       },
       node: {
         normal: {
-          type: "circle",
+          type: node => node.type,
+          width: node => node.width,
+          height: node => node.height,
           radius: node => node.size, // Use the value of each node object
           color: node => node.color,
         },
@@ -71,6 +73,7 @@ const configs = reactive(
         selectable: false,
         label: {
           visible: true,  //node => !!node.label,
+          directionAutoAdjustment: true
         },
         focusring: {
           color: "darkgray",
@@ -139,6 +142,15 @@ const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0]
 }
 
+const loadSample = async () => {
+  const file = await fetch('/definitions-sample.json')
+  const content = await file.json()
+  fileContent.value = content
+  edges.value = createEdges(fileContent.value)
+  nodes.value = convertJsonStructure(fileContent.value)
+  layout("TB")
+}
+
 const handleFileUpload = async () => {
   if (!selectedFile.value) {
     alert("Please select a file first.")
@@ -165,11 +177,11 @@ const convertJsonStructure = (data) => {
   const result = {}
   data.exchanges.forEach(exchange => {
     const key = exchange.name.replace(/\./g, '_')
-    result[key] = { name: exchange.name, size: 20, color: "hotpink" }
+    result[key] = { name: exchange.name, size: 10, color: "hotpink", type: "rect", width: 25, height: 25, icon: "&#xe328" }
   })
   data.queues.forEach(queue => {
     const key = "q_" + queue.name.replace(/\./g, '_')
-    result[key] = { name: queue.name,  size: 16, color: "blue" }
+    result[key] = { name: queue.name,  size: 5, color: "blue", type: "rect", width: 45, height: 15 }
   })
   return result
 }

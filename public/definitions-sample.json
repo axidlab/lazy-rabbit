@@ -1,0 +1,253 @@
+{
+  "rabbit_version": "3.11.6",
+  "users": [],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [],
+  "policies": [],
+  "queues": [
+    {
+      "name": "db_pre",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "retry",
+        "x-dead-letter-routing-key": "db_pre.waiting"
+      }
+    },
+    {
+      "name": "db_pre.waiting",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "retry",
+        "x-dead-letter-routing-key": "db_pre",
+        "x-message-ttl": 60000
+      }
+    },
+    {
+      "name": "db_pre.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "db_live",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "retry",
+        "x-dead-letter-routing-key": "db_live.waiting"
+      }
+    },
+    {
+      "name": "db_live.waiting",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "retry",
+        "x-dead-letter-routing-key": "db_live",
+        "x-message-ttl": 60000
+      }
+    },
+    {
+      "name": "db_live.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "db_ivg",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "retry",
+        "x-dead-letter-routing-key": "db_ivg.waiting"
+      }
+    },
+    {
+      "name": "db_ivg.waiting",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "retry",
+        "x-dead-letter-routing-key": "db_ivg",
+        "x-message-ttl": 60000
+      }
+    },
+    {
+      "name": "db_ivg.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "db.ivg",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "db.live",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "db.pre",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "retry",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+   
+    {
+      "source": "db.pre",
+      "vhost": "/",
+      "destination": "db_pre",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "db.live",
+      "vhost": "/",
+      "destination": "db_live",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "db.ivg",
+      "vhost": "/",
+      "destination": "db_ivg",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_pre",
+      "destination_type": "queue",
+      "routing_key": "db_pre",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_pre.waiting",
+      "destination_type": "queue",
+      "routing_key": "db_pre.waiting",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_pre.error",
+      "destination_type": "queue",
+      "routing_key": "db_pre.error",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_live",
+      "destination_type": "queue",
+      "routing_key": "db_live",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_live.waiting",
+      "destination_type": "queue",
+      "routing_key": "db_live.waiting",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_live.error",
+      "destination_type": "queue",
+      "routing_key": "db_live.error",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_ivg",
+      "destination_type": "queue",
+      "routing_key": "db_ivg",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_ivg.waiting",
+      "destination_type": "queue",
+      "routing_key": "db_ivg.waiting",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "db_ivg.error",
+      "destination_type": "queue",
+      "routing_key": "db_ivg.error",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "rr_feg_retry",
+      "destination_type": "queue",
+      "routing_key": "rr_feg_retry",
+      "arguments": {}
+    },
+    {
+      "source": "retry",
+      "vhost": "/",
+      "destination": "rr_feg_retry.error",
+      "destination_type": "queue",
+      "routing_key": "rr_feg_retry.error",
+      "arguments": {}
+    }
+  ]
+}
