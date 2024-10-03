@@ -15,7 +15,8 @@
       :nodes="nodes"
       :edges="edges"
       :layouts="layouts"
-      :configs="configs">
+      :configs="configs"
+      :eventHandlers="eventHandlers">
     <template #edge-label="{ edge, ...slotProps }">
       <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps" />
     </template>
@@ -179,12 +180,12 @@ const handleFileUpload = async () => {
 const convertJsonStructure = (data) => {
   const result = {}
   data.exchanges.forEach(exchange => {
-    const key = exchange.name.replace(/\./g, '_')
-    result[key] = { name: exchange.name, size: 10, color: "hotpink", type: "rect", width: 25, height: 25, icon: "&#xe328" }
+    const key = "e_" + exchange.name.replace(/\./g, '_')
+    result[key] = { kind: "exchange",  name: exchange.name, size: 10, color: "hotpink", type: "rect", width: 25, height: 25, icon: "&#xe328" }
   })
   data.queues.forEach(queue => {
     const key = "q_" + queue.name.replace(/\./g, '_')
-    result[key] = { name: queue.name,  size: 5, color: "blue", type: "rect", width: 45, height: 15 }
+    result[key] = { kind: "queue", name: queue.name,  size: 5, color: "green", type: "rect", width: 45, height: 15 }
   })
   return result
 }
@@ -192,12 +193,27 @@ const convertJsonStructure = (data) => {
 const createEdges = (data) => {
   const result = {}
   data.bindings.forEach(binding => {
-    let source = binding.source.replace(/\./g, '_');
+    let source = "e_" + binding.source.replace(/\./g, '_');
     let target = "q_" + binding.destination.replace(/\./g, '_');
     const key = source + "_" + target
     result[key] = { source: source, target: target, color: "grey", label: binding.routing_key }
   })
   return result
+}
+
+const eventHandlers: vNG.EventHandlers = {
+  "node:pointerover": ({ node }) => {
+    for (const key in edges.value) {
+      if (edges.value[key].source === node || edges.value[key].target === node ) {
+        edges.value[key].color = "blue"
+      }
+    }
+  },
+  "node:pointerout": ({ node }) => {
+    for (const key in edges.value) {
+        edges.value[key].color = "grey"
+      }
+  },
 }
 
 </script>
