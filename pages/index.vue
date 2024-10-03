@@ -70,13 +70,15 @@ const configs = reactive(
           radius: node => node.size + 1,
           color: node => node.color,
         },
-        selectable: false,
+        selectable: true,
         label: {
           visible: true,  //node => !!node.label,
           directionAutoAdjustment: true
         },
         focusring: {
           color: "darkgray",
+          width: 2,
+          padding: 2
         },
       },
       edge: {
@@ -85,6 +87,7 @@ const configs = reactive(
           color: edge => edge.color,
           // dasharray: edge => (edge.dashed ? "4" : "0"),
         },
+        selectable: true,
         marker: {
           target: {
             type: "arrow",
@@ -138,22 +141,25 @@ function layout(direction: "LR" | "TB") {
   })
 }
 
+const prepareData = (sourceJson) => {
+  edges.value = createEdges(sourceJson)
+  nodes.value = convertJsonStructure(sourceJson)
+  layout("TB")
+}
+
 const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0]
 }
 
 const loadSample = async () => {
   const file = await fetch('/definitions-sample.json')
-  const content = await file.json()
-  fileContent.value = content
-  edges.value = createEdges(fileContent.value)
-  nodes.value = convertJsonStructure(fileContent.value)
-  layout("TB")
+  fileContent.value = await file.json()
+  prepareData(fileContent.value)
 }
 
 const handleFileUpload = async () => {
   if (!selectedFile.value) {
-    alert("Please select a file first.")
+    alert("Please select a file or load the sample.")
     return
   }
 
@@ -161,10 +167,7 @@ const handleFileUpload = async () => {
   reader.onload = (e) => {
     try {
       fileContent.value = JSON.parse(e.target.result)
-
-      edges.value = createEdges(fileContent.value)
-      nodes.value = convertJsonStructure(fileContent.value)
-      layout("TB")
+      prepareData(fileContent.value)
     } catch (error) {
       alert("Failed to parse JSON file.")
       console.error("Error parsing JSON:", error)
