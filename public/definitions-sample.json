@@ -232,22 +232,6 @@
       "destination_type": "queue",
       "routing_key": "db_ivg.error",
       "arguments": {}
-    },
-    {
-      "source": "retry",
-      "vhost": "/",
-      "destination": "rr_feg_retry",
-      "destination_type": "queue",
-      "routing_key": "rr_feg_retry",
-      "arguments": {}
-    },
-    {
-      "source": "retry",
-      "vhost": "/",
-      "destination": "rr_feg_retry.error",
-      "destination_type": "queue",
-      "routing_key": "rr_feg_retry.error",
-      "arguments": {}
     }
   ]
 }
