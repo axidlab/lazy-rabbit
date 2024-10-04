@@ -81,6 +81,13 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
     yarn add -D @nuxtjs/tailwindcss
     npx tailwindcss init
 
+### Flowbite
+
+Flowbite requires that you successfully completed `TailwindCSS` installation first.
+
+    yarn add flowbite
+
+
 More info: 
 
 * https://flowbite.com/docs/getting-started/nuxt-js/

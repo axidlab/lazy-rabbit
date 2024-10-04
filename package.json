@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "dagre": "^0.8.5",
+    "flowbite": "^2.5.2",
     "nuxt": "^3.13.0",
     "v-network-graph": "^0.9.17",
     "vue": "latest",
