@@ -1,11 +1,10 @@
 <template>
-  <h1>Lazy Rabbit - Topology Visualizer</h1>
   <div>
     <form @submit.prevent="handleFileUpload">
-      <button type="button" v-on:click="loadSample">Load sample</button>
-      &nbsp;or&nbsp; 
-      <input type="file" accept=".json" @change="handleFileChange" />
-      <button type="submit">Show topology</button>
+      <button type="button" v-on:click="loadSample" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Load sample</button>
+      or
+      <input @change="handleFileChange"  accept="application/json" class="text-sm text-gray-900 border border-gray-300 rounded-lg m-2 cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+      <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm ml-1 px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Show topology</button>
     </form>
     
   </div>
@@ -21,19 +20,41 @@
       <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps" />
     </template>
   </v-network-graph>
-  <div>
-    <h3>Source</h3>
-    <pre>{{ fileContent }}</pre>
-  </div>
-  <hr />
-  <div>
-    <h3>Nodes</h3>
-    <pre>{{ nodes }}</pre>
-  </div>
-  <hr />
-  <div>
-    <h3>Edges</h3>
-    <pre>{{ edges }}</pre>
+
+  <div id="accordion-flush" data-accordion="collapse" data-active-classes="bg-white dark:bg-gray-900 text-gray-900 dark:text-white" data-inactive-classes="text-gray-500 dark:text-gray-400">
+    <h2 id="accordion-flush-heading-1">
+      <button type="button" class="flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3" data-accordion-target="#accordion-flush-body-1" aria-expanded="false" aria-controls="accordion-flush-body-1">
+        <span>Source definitions</span>
+        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+        </svg>
+      </button>
+    </h2>
+    <div id="accordion-flush-body-1" class="hidden" aria-labelledby="accordion-flush-heading-1">
+      <pre>{{ fileContent }}</pre>
+    </div>
+    <h2 id="accordion-flush-heading-2">
+      <button type="button" class="flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3" data-accordion-target="#accordion-flush-body-2" aria-expanded="false" aria-controls="accordion-flush-body-2">
+        <span>Nodes</span>
+        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+        </svg>
+      </button>
+    </h2>
+    <div id="accordion-flush-body-2" class="hidden" aria-labelledby="accordion-flush-heading-2">
+      <pre>{{ nodes }}</pre>
+    </div>
+    <h2 id="accordion-flush-heading-3">
+      <button type="button" class="flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3" data-accordion-target="#accordion-flush-body-3" aria-expanded="false" aria-controls="accordion-flush-body-3">
+        <span>Edges</span>
+        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+        </svg>
+      </button>
+    </h2>
+    <div id="accordion-flush-body-3" class="hidden" aria-labelledby="accordion-flush-heading-3">
+      <pre>{{ edges }}</pre>
+    </div>
   </div>
 </template>
 
@@ -41,6 +62,7 @@
 import {reactive, ref} from 'vue'
 import * as vNG from "v-network-graph";
 import dagre from "dagre/dist/dagre.min.js"
+import { useFlowbite } from '~/composables/useFlowbite';
 
 const selectedFile = ref(null)
 const fileContent = ref(null)
@@ -53,6 +75,11 @@ const graph = ref<vNG.VNetworkGraphInstance>()
 
 const nodeSize = 40
 
+onMounted(() => {
+  useFlowbite(() => {
+    initFlowbite();
+  })
+})
 
 const configs = reactive(
     vNG.defineConfigs<Node, Edge>({
@@ -222,6 +249,6 @@ const eventHandlers: vNG.EventHandlers = {
 .graph {
   width: 100%;
   height: 50em;
-  border: 1px solid #000;
+  border: 1px solid #ddd;
 }
 </style>
