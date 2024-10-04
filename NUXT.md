@@ -73,3 +73,15 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Extensions
+
+### TailwindCSS
+
+    yarn add -D @nuxtjs/tailwindcss
+    npx tailwindcss init
+
+More info: 
+
+* https://flowbite.com/docs/getting-started/nuxt-js/
+* https://tailwindcss.nuxtjs.org/getting-started
