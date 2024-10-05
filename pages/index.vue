@@ -1,14 +1,15 @@
 <template>
   <div>
     <form @submit.prevent="handleFileUpload">
-      <button type="button" v-on:click="loadSample" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Load sample</button>
-      or
-      <input @change="handleFileChange"  accept="application/json" class="text-sm text-gray-900 border border-gray-300 rounded-lg m-2 cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+      <input @change="handleFileChange"  accept="application/json" class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
       <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm ml-1 px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Show topology</button>
+      or
+      <button type="button" v-on:click="loadSample" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Load sample</button>
     </form>
-    
   </div>
+  
   <v-network-graph
+      @click.ctrl="startBoxSelection"
       class="graph"
       ref="graph"
       :nodes="nodes"
@@ -85,6 +86,15 @@ const configs = reactive(
     vNG.defineConfigs<Node, Edge>({
       view: {
         autoPanAndZoomOnLoad: "center-content",
+        boxSelectionEnabled: false,
+        selection: {
+          box: {
+            color: "#0000ff20",
+            strokeWidth: 1,
+            strokeColor: "#aaaaff",
+            strokeDasharray: "0",
+          },
+        },
       },
       node: {
         normal: {
@@ -126,6 +136,10 @@ const configs = reactive(
       },
     })
 )
+
+function startBoxSelection() {
+  graph.value?.startBoxSelection()
+}
 
 function layout(direction: "LR" | "TB") {
   // if (Object.keys(nodes).length <= 1 || Object.keys(edges).length == 0) {
@@ -251,4 +265,5 @@ const eventHandlers: vNG.EventHandlers = {
   height: 50em;
   border: 1px solid #ddd;
 }
+
 </style>

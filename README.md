@@ -8,7 +8,8 @@ Very simple visualizer of RabbitMQ topology.
 * Visualize RabbitMQ definitions from JSON file (sample is provided in `public/definitions-sample.json`)
 * Zoom in/out
 * Multiple nodes can be selected and moved around
-* Hovering on over the node highlights connections 
+* Hovering over the node highlights connections 
+* CTRL+click activates multi-node selection
 
 ## Development
 
@@ -21,4 +22,9 @@ Very simple visualizer of RabbitMQ topology.
 
 ## Resources
 
+* https://nuxtjs.com
+* https://dash14.github.io/v-network-graph
+* https://flowbite.com/
+* https://coolors.co/
 * https://fonts.google.com/icons
+* https://github.com/dagrejs/dagre/wiki
