@@ -2,9 +2,9 @@
   <div>
     <form @submit.prevent="handleFileUpload">
       <input @change="handleFileChange"  accept="application/json" class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
-      <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm ml-1 px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Show topology</button>
+      <button type="submit" class="text-white bg-secondary-blue hover:bg-primary-blue focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm ml-1 px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Show topology</button>
       or
-      <button type="button" v-on:click="loadSample" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Load sample</button>
+      <button type="button" v-on:click="loadSample" class="text-secondary-blue hover:text-white border border-secondary-blue hover:bg-primary-blue focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2 me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Load sample</button>
     </form>
   </div>
   
@@ -89,9 +89,9 @@ const configs = reactive(
         boxSelectionEnabled: false,
         selection: {
           box: {
-            color: "#0000ff20",
+            color: "#C4F1BE20",
             strokeWidth: 1,
-            strokeColor: "#aaaaff",
+            strokeColor: "#C4F1BE",
             strokeDasharray: "0",
           },
         },
@@ -118,14 +118,27 @@ const configs = reactive(
           width: 2,
           padding: 2
         },
+        label: {
+          color: "#525b76",
+        }
       },
       edge: {
         normal: {
           width: 2, // Use the value of each edge object
           color: edge => edge.color,
-          // dasharray: edge => (edge.dashed ? "4" : "0"),
+          dasharray: edge => (edge.animate ? "4" : "0"),
+          animate: edge => edge.animate
+        },
+        hover: {
+          color: "#C4F1BE"
         },
         selectable: true,
+        label: {
+          color: "#525b76",
+        },
+        selected: {
+          color: "#a2c3a4",
+        },
         marker: {
           target: {
             type: "arrow",
@@ -222,11 +235,11 @@ const convertJsonStructure = (data) => {
   const result = {}
   data.exchanges.forEach(exchange => {
     const key = "e_" + exchange.name.replace(/\./g, '_')
-    result[key] = { kind: "exchange",  name: exchange.name, size: 10, color: "hotpink", type: "rect", width: 25, height: 25, icon: "&#xe328" }
+    result[key] = { kind: "exchange",  name: exchange.name, size: 10, color: "#201E50", type: "rect", width: 25, height: 25, icon: "&#xe328" }
   })
   data.queues.forEach(queue => {
     const key = "q_" + queue.name.replace(/\./g, '_')
-    result[key] = { kind: "queue", name: queue.name,  size: 5, color: "green", type: "rect", width: 45, height: 15 }
+    result[key] = { kind: "queue", name: queue.name,  size: 5, color: "#869D96", type: "rect", width: 45, height: 15 }
   })
   return result
 }
@@ -237,7 +250,7 @@ const createEdges = (data) => {
     let source = "e_" + binding.source.replace(/\./g, '_');
     let target = "q_" + binding.destination.replace(/\./g, '_');
     const key = source + "_" + target
-    result[key] = { source: source, target: target, color: "grey", label: binding.routing_key }
+    result[key] = { source: source, target: target, color: "#525B76", label: binding.routing_key }
   })
   return result
 }
@@ -246,13 +259,15 @@ const eventHandlers: vNG.EventHandlers = {
   "node:pointerover": ({ node }) => {
     for (const key in edges.value) {
       if (edges.value[key].source === node || edges.value[key].target === node ) {
-        edges.value[key].color = "blue"
+        edges.value[key].color = "#525B76"
+        edges.value[key].animate = true
       }
     }
   },
   "node:pointerout": ({ node }) => {
     for (const key in edges.value) {
-        edges.value[key].color = "grey"
+      edges.value[key].color = "#525B76"
+      edges.value[key].animate = false
       }
   },
 }
@@ -263,7 +278,7 @@ const eventHandlers: vNG.EventHandlers = {
 .graph {
   width: 100%;
   height: 50em;
-  border: 1px solid #ddd;
+  border: 1px solid #525b76;
 }
 
 </style>

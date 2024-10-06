@@ -24,7 +24,7 @@ Very simple visualizer of RabbitMQ topology.
 
 * https://nuxtjs.com
 * https://dash14.github.io/v-network-graph
-* https://flowbite.com/
-* https://coolors.co/
+* https://flowbite.com
+* https://coolors.co
 * https://fonts.google.com/icons
 * https://github.com/dagrejs/dagre/wiki
