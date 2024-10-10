@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/content": "^2.13.2",
     "dagre": "^0.8.5",
     "flowbite": "^2.5.2",
     "nuxt": "^3.13.0",

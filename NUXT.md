@@ -76,6 +76,10 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 ## Extensions
 
+### Nuxt Content
+
+    yarn add @nuxt/content
+
 ### TailwindCSS
 
     yarn add -D @nuxtjs/tailwindcss

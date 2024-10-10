@@ -1,10 +1,38 @@
 <template>
+  <!-- Usage modal -->
+  <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+      <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Usage</h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+        <div class="p-4 md:p-5 space-y-4">
+          <div class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+            <ContentDoc path="/usage" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <div>
     <form @submit.prevent="handleFileUpload">
       <input @change="handleFileChange"  accept="application/json" class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
       <button type="submit" class="text-white bg-secondary-blue hover:bg-primary-blue focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm ml-1 px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Show topology</button>
       or
       <button type="button" v-on:click="loadSample" class="text-secondary-blue hover:text-white border border-secondary-blue hover:bg-primary-blue focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-2 me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Load sample</button>
+      <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button" class="align-middle">
+        <svg class="text-secondary-green hover:text-primary-blue dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.008-3.018a1.502 1.502 0 0 1 2.522 1.159v.024a1.44 1.44 0 0 1-1.493 1.418 1 1 0 0 0-1.037.999V14a1 1 0 1 0 2 0v-.539a3.44 3.44 0 0 0 2.529-3.256 3.502 3.502 0 0 0-7-.255 1 1 0 0 0 2 .076c.014-.398.187-.774.48-1.044Zm.982 7.026a1 1 0 1 0 0 2H12a1 1 0 1 0 0-2h-.01Z" clip-rule="evenodd"/>
+        </svg>
+        <span class="sr-only">Usage</span>
+      </button>
     </form>
   </div>
   
@@ -63,7 +91,6 @@
 import {reactive, ref} from 'vue'
 import * as vNG from "v-network-graph";
 import dagre from "dagre/dist/dagre.min.js"
-import { useFlowbite } from '~/composables/useFlowbite';
 
 const selectedFile = ref(null)
 const fileContent = ref(null)
@@ -75,12 +102,6 @@ const layouts = ref({ nodes: {} })
 const graph = ref<vNG.VNetworkGraphInstance>()
 
 const nodeSize = 40
-
-onMounted(() => {
-  useFlowbite(() => {
-    initFlowbite();
-  })
-})
 
 const configs = reactive(
     vNG.defineConfigs<Node, Edge>({
@@ -235,11 +256,15 @@ const convertJsonStructure = (data) => {
   const result = {}
   data.exchanges.forEach(exchange => {
     const key = "e_" + exchange.name.replace(/\./g, '_')
-    result[key] = { kind: "exchange",  name: exchange.name, size: 10, color: "#201E50", type: "rect", width: 25, height: 25, icon: "&#xe328" }
+    const sourceReference = { nodePath: "exchanges.name", nodeValue: exchange.name }
+    const metadata = { kind: "exchange", sourceReference : sourceReference }
+    result[key] = { name: exchange.name, size: 10, color: "#201E50", type: "rect", width: 25, height: 25, icon: "&#xe328", metadata: metadata }
   })
   data.queues.forEach(queue => {
     const key = "q_" + queue.name.replace(/\./g, '_')
-    result[key] = { kind: "queue", name: queue.name,  size: 5, color: "#869D96", type: "rect", width: 45, height: 15 }
+    const sourceReference = { nodePath: "queues.name", nodeValue: queue.name }
+    const metadata = { kind: "queue", sourceReference : sourceReference }
+    result[key] = { name: queue.name,  size: 5, color: "#869D96", type: "rect", width: 45, height: 15, metadata: metadata }
   })
   return result
 }
@@ -280,5 +305,4 @@ const eventHandlers: vNG.EventHandlers = {
   height: 50em;
   border: 1px solid #525b76;
 }
-
 </style>

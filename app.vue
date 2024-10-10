@@ -24,7 +24,6 @@
     <section class="w-full p-4">
       <NuxtPage />  
     </section>
-<!--    &copy; 2024 <a href="https://axidlab.com">Axid Lab Ltd.</a> | <a href="https://github.com/axidlab/lazy-rabbit">GitHub</a> | <a href="https://nuxt.com">Nuxt</a> | <a href="https://dash14.github.io/v-network-graph">v-network-graph</a>-->
     <footer class="bg-white dark:bg-gray-900">
       <div class="mx-auto w-full p-4 py-6 lg:py-8">
         <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
@@ -48,5 +47,14 @@
 
   </div>
 </template>
+
 <script setup lang="ts">
+import {useFlowbite} from "~/composables/useFlowbite";
+
+onMounted(() => {
+  useFlowbite(() => {
+    initFlowbite();
+  })
+})
+
 </script>
