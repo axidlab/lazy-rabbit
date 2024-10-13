@@ -20,7 +20,23 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- drawer node info -->
+  <div id="drawer-node-info" ref="drawerNodeInfo" class="fixed z-40 h-screen w-auto overflow-y-auto bg-white p-4 dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-js-label">
+    <h5 id="drawer-right-label" class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400"><svg class="w-4 h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>{{ nodeInfo.metadata?.kind }}: {{ nodeInfo.attributes?.name }}</h5>
+    <button type="button" data-drawer-hide="drawer-node-info" aria-controls="drawer-node-info" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white" >
+      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+      </svg>
+      <span class="sr-only">Close</span>
+    </button>
+    <pre class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+      {{ JSON.stringify(nodeInfo.attributes, null, 2) }}
+    </pre>
+  </div>
+
   <div>
     <form @submit.prevent="handleFileUpload">
       <input @change="handleFileChange"  accept="application/json" class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
@@ -91,8 +107,44 @@
 import {reactive, ref} from 'vue'
 import * as vNG from "v-network-graph";
 import dagre from "dagre/dist/dagre.min.js"
+import {useFlowbite} from "~/composables/useFlowbite";
+import {Drawer} from "flowbite";
 
-const selectedFile = ref(null)
+const drawerRef = useTemplateRef('drawerNodeInfo')
+const drawer = ref(null)
+const nodeInfo = ref({})
+
+onMounted(() => {
+  useFlowbite(() => {
+    initFlowbite();
+  })
+  drawer.value = new Drawer(drawerRef.value,
+      {
+        placement: 'right',
+        backdrop: true,
+        bodyScrolling: true,
+        edge: false,
+        edgeOffset: '',
+        backdropClasses:
+            'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30',
+        onHide: () => {
+          nodeInfo.value = {}
+        },
+        onShow: () => {
+          console.log('drawer is shown');
+        },
+        onToggle: () => {
+          console.log('drawer has been toggled');
+        },
+      },
+      {
+        id: 'drawer-node-info',
+        override: true
+      });
+  drawer.value.hide()
+})
+
+const sourceData = ref(null)
 const fileContent = ref(null)
 
 const nodes = ref({})
@@ -224,7 +276,7 @@ const prepareData = (sourceJson) => {
 }
 
 const handleFileChange = (event) => {
-  selectedFile.value = event.target.files[0]
+  sourceData.value = event.target.files[0]
 }
 
 const loadSample = async () => {
@@ -234,7 +286,7 @@ const loadSample = async () => {
 }
 
 const handleFileUpload = async () => {
-  if (!selectedFile.value) {
+  if (!sourceData.value) {
     alert("Please select a file or load the sample.")
     return
   }
@@ -249,7 +301,7 @@ const handleFileUpload = async () => {
       console.error("Error parsing JSON:", error)
     }
   }
-  reader.readAsText(selectedFile.value)
+  reader.readAsText(sourceData.value)
 }
 
 const convertJsonStructure = (data) => {
@@ -258,13 +310,13 @@ const convertJsonStructure = (data) => {
     const key = "e_" + exchange.name.replace(/\./g, '_')
     const sourceReference = { nodePath: "exchanges.name", nodeValue: exchange.name }
     const metadata = { kind: "exchange", sourceReference : sourceReference }
-    result[key] = { name: exchange.name, size: 10, color: "#201E50", type: "rect", width: 25, height: 25, icon: "&#xe328", metadata: metadata }
+    result[key] = { name: exchange.name, size: 10, color: "#201E50", type: "rect", width: 25, height: 25, icon: "&#xe328", metadata: metadata, attributes: exchange }
   })
   data.queues.forEach(queue => {
     const key = "q_" + queue.name.replace(/\./g, '_')
     const sourceReference = { nodePath: "queues.name", nodeValue: queue.name }
     const metadata = { kind: "queue", sourceReference : sourceReference }
-    result[key] = { name: queue.name,  size: 5, color: "#869D96", type: "rect", width: 45, height: 15, metadata: metadata }
+    result[key] = { name: queue.name,  size: 5, color: "#869D96", type: "rect", width: 45, height: 15, metadata: metadata, attributes: queue }
   })
   return result
 }
@@ -295,6 +347,11 @@ const eventHandlers: vNG.EventHandlers = {
       edges.value[key].animate = false
       }
   },
+  "node:dblclick":  ({ node }) => {
+    console.dir(nodes.value[node])
+    nodeInfo.value = nodes.value[node]
+    drawer.value.toggle()
+  }
 }
 
 </script>
